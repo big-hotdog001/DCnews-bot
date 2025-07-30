@@ -105,32 +105,7 @@ async def news(ctx, *, category: str = None):
         'index': 0
     }
 
-    news_text = ""
-    for article in articles[:5]:
-        news_text += f"Title: {article['title']}\n"
-        news_text += f"Description: {article['description']}\n"
-        news_text += f"URL: {article['url']}\n\n"
-
-    chat_completion = groq_client.chat.completions.create(
-        messages=[
-            {
-                "role": "user",
-                "content": f"Summarize the following news articles:\n\n{news_text}",
-            }
-        ],
-        model="llama3-8b-8192",
-        max_tokens=1024,  # Limit the summary length
-    )
-    
-    summary = chat_completion.choices[0].message.content
-    
-    # Split the summary into chunks of 2000 characters or less
-    chunks = [summary[i:i + 2000] for i in range(0, len(summary), 2000)]
-    
     await ctx.send("**Top News Headlines:**")
-    for chunk in chunks:
-        await ctx.send(chunk)
-
     await send_articles(ctx, articles[:5])
     user_data[user_id]['index'] = 5
 
@@ -152,31 +127,7 @@ async def next_news(ctx):
 
     next_articles = articles[index:index + 5]
 
-    news_text = ""
-    for article in next_articles:
-        news_text += f"Title: {article['title']}\n"
-        news_text += f"Description: {article['description']}\n"
-        news_text += f"URL: {article['url']}\n\n"
-
-    chat_completion = groq_client.chat.completions.create(
-        messages=[
-            {
-                "role": "user",
-                "content": f"Summarize the following news articles:\n\n{news_text}",
-            }
-        ],
-        model="llama3-8b-8192",
-        max_tokens=1024,
-    )
-    
-    summary = chat_completion.choices[0].message.content
-    
-    chunks = [summary[i:i + 2000] for i in range(0, len(summary), 2000)]
-    
     await ctx.send("**Here are the next news headlines:**")
-    for chunk in chunks:
-        await ctx.send(chunk)
-
     await send_articles(ctx, next_articles)
     user_session['index'] += 5
 
@@ -196,31 +147,7 @@ async def search(ctx, *, keyword: str):
         'index': 0
     }
 
-    news_text = ""
-    for article in articles[:5]:
-        news_text += f"Title: {article['title']}\n"
-        news_text += f"Description: {article['description']}\n"
-        news_text += f"URL: {article['url']}\n\n"
-
-    chat_completion = groq_client.chat.completions.create(
-        messages=[
-            {
-                "role": "user",
-                "content": f"Summarize the following news articles about '{keyword}':\n\n{news_text}",
-            }
-        ],
-        model="llama3-8b-8192",
-        max_tokens=1024,
-    )
-    
-    summary = chat_completion.choices[0].message.content
-    
-    chunks = [summary[i:i + 2000] for i in range(0, len(summary), 2000)]
-    
     await ctx.send(f"**News about '{keyword}':**")
-    for chunk in chunks:
-        await ctx.send(chunk)
-
     await send_articles(ctx, articles[:5])
     user_data[user_id]['index'] = 5
 
